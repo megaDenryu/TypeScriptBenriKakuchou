@@ -1,4 +1,4 @@
-import { IResultBase } from "../../BaseClasses/ResultBase";
+import { IResultBase } from "../BaseClasses/ResultBase";
 
 /**
  * テキスト入力や一般的なinput要素に対して、値を設定しchangeイベントを発火する

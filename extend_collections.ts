@@ -1,4 +1,4 @@
-import { IValueObject } from "../BaseClasses/base_value_object";
+import { IValueObject } from "./BaseClasses/base_value_object";
 
 
 
