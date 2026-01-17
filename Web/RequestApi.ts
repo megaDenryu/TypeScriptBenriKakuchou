@@ -1,9 +1,13 @@
-import { URLBaseInfo } from "../../AppPage/AppVoiroStudio/AppPageSetting/WebSocketアクセサー/URLBaseInfo課";
-import { CharacterModeState, CharacterModeStateReq, ClientId } from "../../ValueObject/Character";
-import { CharaCreateData } from "../../ValueObject/IHumanPart";
 import { HttpClient } from "./HttpClient";
 import { RetryHandler } from "./RetryHandler";
 
+export type ClientId = string//&{ readonly brand: unique symbol };
+
+export type URLBaseInfo = {
+    localhost: string;
+    port: string;
+    client_id: string;
+}
 
 export class RequestAPI {
     private static _port: string | null = "8010";
