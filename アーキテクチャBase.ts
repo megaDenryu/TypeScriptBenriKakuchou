@@ -53,7 +53,7 @@ export interface ReadOnlyViewModel{
 
 export interface View<VM extends ReadOnlyViewModel> extends 目的別メソッド登録可能<VM>{
     getVM(): VM ;
-    setVM(value: VM) ;
+    setVM(value: VM) : void ;
 }
 
 export interface BackendBehavior<VM extends ReadOnlyViewModel>{
