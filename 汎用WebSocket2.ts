@@ -25,19 +25,19 @@ import { ExtendedWebSocket } from "./extend";
 export interface 汎用WebSocket2Config<TMessage> {
     /** WebSocket接続URL */
     url: string;
-    
+
     /** Zodスキーマ（実行時型検証用） */
     schema: z.ZodType<TMessage>;
-    
+
     /** メッセージ振り分けハンドラー（戦略パターン） */
     messageHandler: (message: TMessage) => void;
-    
+
     /** 接続成功時のコールバック（オプション） */
     onOpen?: () => void;
-    
+
     /** 接続切断時のコールバック（オプション） */
     onClose?: () => void;
-    
+
     /** エラー発生時のコールバック（オプション） */
     onError?: (error: Event) => void;
 }
@@ -87,10 +87,10 @@ export class 汎用WebSocket2<TMessage> {
             try {
                 // Zodスキーマによる実行時型検証
                 const message = this._socket.recieveJsonAsZod<TMessage>(event, this._config.schema);
-                
+
                 // 外部から注入されたハンドラーに処理を委譲
                 this._config.messageHandler(message);
-                
+
             } catch (error) {
                 console.error('汎用WebSocket2: メッセージ解析・検証エラー', error);
                 if (error instanceof Error) {
@@ -120,6 +120,17 @@ export class 汎用WebSocket2<TMessage> {
     public close(): void {
         if (this._socket) {
             this._socket.close();
+        }
+    }
+
+    /**
+     * データをJSONとして送信
+     */
+    public send(data: unknown): void {
+        if (this._socket.readyState === WebSocket.OPEN) {
+            this._socket.sendJson(data);
+        } else {
+            console.warn('汎用WebSocket2: 接続が開いていないため送信できません', data);
         }
     }
 
