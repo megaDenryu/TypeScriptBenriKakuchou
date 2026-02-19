@@ -56,4 +56,9 @@ export class IDMap< ID extends IDBase自動採番<string, any>, T> {
     public idStrings(): IterableIterator<string> {
         return this.map.keys();
     }
+
+    /** 生のid文字列で存在確認する。instanceof分岐なしに異種IDMapを横断検索するためのエスケープハッチ */
+    public hasString(id: string): boolean {
+        return this.map.has(id);
+    }
 }
