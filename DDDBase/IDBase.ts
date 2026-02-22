@@ -37,10 +37,6 @@ export class IDMap< ID extends IDBase自動採番<string, any>, T> {
         return this.map.has(id.id);
     }
 
-    public hasString(id: string): boolean {
-        return this.map.has(id);
-    }
-
     public clear(): void {
         this.map.clear();
     }
