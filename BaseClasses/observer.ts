@@ -22,6 +22,20 @@ export interface IReadableReactive<T> {
 }
 
 /**
+ * 派生セルのソースとして使える「1段目のセル」であることを示すブランド付きインターフェース。
+ *
+ * [[ReactiveProperty]] のみが実装する。
+ * [[DerivedReactiveProperty.constructor]] の `sources` 引数は本インターフェースを要求することで、
+ * 派生セルから派生セルを作る多段チェーンを型レベルで禁止する。
+ *
+ * T の共変性を保つため property シグネチャは method 記法で揃え、
+ * `IRxPrimitive<string>` を `IRxPrimitive<unknown>` へ代入可能にする。
+ */
+export interface IRxPrimitive<T> extends IReadableReactive<T> {
+    readonly __rxPrimitive: true;
+}
+
+/**
  * 書き込み可能なリアクティブプロパティ。
  *
  * 単一の値を保持し、set() で値が変わったとき購読者に通知する。
@@ -42,7 +56,10 @@ export interface IReadableReactive<T> {
  * - set の前後にバリデーションや API 呼び出しを挟む（set は純粋に値の差し替えに留める）
  * - 派生値を作るときに addMethod で手動連鎖させる（代わりに [[DerivedReactiveProperty]] を使う）
  */
-export class ReactiveProperty<T> implements IReadableReactive<T> {
+export class ReactiveProperty<T> implements IRxPrimitive<T> {
+    /** [[IRxPrimitive]] のブランド。[[DerivedReactiveProperty]] の sources に渡せるのは本クラスだけ。 */
+    public readonly __rxPrimitive = true as const;
+
     private _value: T;
     private readonly _subscribers = new Map<symbol, (value: T, previousValue: T) => void>();
 
@@ -146,11 +163,13 @@ export class DerivedReactiveProperty<T> implements IReadableReactive<T> {
 
     /**
      * @param compute 純粋関数。副作用・非同期・タイマー禁止
-     * @param sources ソースセル群。[[ReactiveProperty]] のみ受け付ける（DerivedReactiveProperty を渡すと型エラー）
+     * @param sources ソースセル群。[[IRxPrimitive]] を実装する [[ReactiveProperty]] のみ受け付ける。
+     *                [[DerivedReactiveProperty]] 自身は [[IRxPrimitive]] を実装しないので
+     *                派生セルから派生セルを作る多段チェーンが型レベルで禁止される。
      */
     constructor(
         compute: () => T,
-        sources: readonly ReactiveProperty<unknown>[],
+        sources: readonly IRxPrimitive<unknown>[],
     ) {
         this._computed = new ReactiveProperty(compute());
         for (const src of sources) {
